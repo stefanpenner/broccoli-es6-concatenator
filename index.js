@@ -46,6 +46,7 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
 
     if (self.loaderFile) {
       addLegacyFile(self.loaderFile)
+    }
 
     // This glob tends to be the biggest performance hog
     var inputFiles = helpers.multiGlob(self.inputFiles, {cwd: srcDir})
@@ -114,15 +115,16 @@ ES6Concatenator.prototype.write = function (readTree, destDir) {
         imports = cacheObject.imports
         output.push(cacheObject.output)
         modulesAdded[moduleName] = true
+
+        for (i = 0; i < imports.length; i++) {
+          var importName = imports[i]
+          addModule(importName)
+        }
       } catch (err) {
         // Bug: When a non-existent file is referenced, this is the referenced
         // file, not the parent
         err.file = modulePath
-        throw err
-      }
-      for (i = 0; i < imports.length; i++) {
-        var importName = imports[i]
-        addModule(importName)
+        //throw err
       }
     }
 
